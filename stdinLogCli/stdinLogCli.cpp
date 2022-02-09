@@ -8,22 +8,22 @@
 #include <windows.h>
 #include <regex>
 
-int main()
+int wmain()
 {
-    std::string commandline = "logcli query ";
-    if (std::cin)
+    std::wstring commandline = L"logcli query ";
+    if (std::wcin)
     {
-        std::string input_line, options, query;
+        std::wstring input_line, options, query;
 
-        getline(std::cin, options);
-        std::cout << options << std::endl;
+        getline(std::wcin, options);
+        std::wcout << options << std::endl;
 
         do
         {
-            getline(std::cin, input_line);
-            std::cout << input_line << std::endl;
+            getline(std::wcin, input_line);
+            std::wcout << input_line << std::endl;
 
-            if (input_line[0] == '#' || input_line[0] == ';')
+            if (input_line[0] == L'#' || input_line[0] == L';')
                 continue;
 
             if (input_line.empty())
@@ -34,24 +34,24 @@ int main()
         while (true);
 
         // query = std::regex_replace(query, std::regex("\\\\"), "\\\\");
-        query = std::regex_replace(query, std::regex("\""), "\\\"");
-        commandline += options + " \"" + query + "\"";
+        query = std::regex_replace(query, std::wregex(L"\""), L"\\\"");
+        commandline += options + L" \"" + query + L"\"";
 
-        std::cout << "# " << commandline << std::endl << std::endl;
+        std::wcout << L"# " << commandline << std::endl << std::endl;
 
         SetStdHandle(STD_ERROR_HANDLE, GetStdHandle(STD_OUTPUT_HANDLE));
 
         PROCESS_INFORMATION pi{};
-        STARTUPINFOA si{};
+        STARTUPINFO si{};
         si.cb = sizeof(si);
-        if (::CreateProcessA(nullptr, (LPSTR)(LPCSTR)commandline.c_str(), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi))
+        if (::CreateProcess(nullptr, (LPWSTR)commandline.c_str(), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi))
         {
             if (WAIT_OBJECT_0 == WaitForSingleObject(pi.hProcess, 100 * 1000))
             {
                 DWORD exitCode;
                 if (GetExitCodeProcess(pi.hProcess, &exitCode))
                 {
-                    std::cout << "PreExecuteCommandScript returned:" << exitCode << std::endl;
+                    std::wcout << L"PreExecuteCommandScript returned:" << exitCode << std::endl;
                 }
             }
             CloseHandle(pi.hThread);
