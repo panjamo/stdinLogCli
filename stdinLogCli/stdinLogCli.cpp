@@ -33,7 +33,7 @@ int main()
         }
         while (true);
 
-        query = std::regex_replace(query, std::regex("\\\\"), "\\\\");
+        // query = std::regex_replace(query, std::regex("\\\\"), "\\\\");
         query = std::regex_replace(query, std::regex("\""), "\\\"");
         commandline += options + " \"" + query + "\"";
 
