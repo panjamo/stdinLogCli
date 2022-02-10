@@ -63,6 +63,7 @@ int wmain(int argc, wchar_t* argv[])
     commandline += options + L" \"" + query + L"\"";
 
     std::wcout << L"# commandline: " << commandline << std::endl;
+    std::wcout << L"# confluence: https://confluence.thinprint.de/x/WAIgC" << std::endl;
     std::wcout << L"# help *options:* https://grafana.com/docs/loki/latest/getting-started/logcli/" << std::endl;
     std::wcout << L"# help *query:*   https://grafana.com/docs/loki/latest/logql/" << std::endl << std::endl;
 
