@@ -18,8 +18,8 @@ int wmain(int argc, wchar_t* argv[])
         options.clear();
         std::wstring input_line;
 
-        getline(std::wcin, options);
-        std::wcout << options << std::endl;
+        while (std::wcin && (getline(std::wcin, options), (options[0] == L'#' || options[0] == L';')))
+            std::wcout << options << std::endl;
 
         do
         {
