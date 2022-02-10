@@ -24,6 +24,9 @@ int wmain(int argc, wchar_t* argv[])
         do
         {
             getline(std::wcin, input_line);
+            if (!std::wcin)
+                input_line.clear();
+
             std::wcout << input_line << std::endl;
 
             if (input_line[0] == L'#' || input_line[0] == L';')
@@ -34,7 +37,7 @@ int wmain(int argc, wchar_t* argv[])
             else
                 query += input_line;
         }
-        while (true);
+        while (std::wcin);
     }
     else
     {
@@ -42,19 +45,19 @@ int wmain(int argc, wchar_t* argv[])
         std::wcout << query << std::endl << std::endl;
     }
 
+    std::wcout << L"# query: " << query << std::endl;
     // query = std::regex_replace(query, std::regex("\\\\"), "\\\\");
     query = std::regex_replace(query, std::wregex(L"\""), L"\\\"");
     commandline += options + L" \"" + query + L"\"";
 
-    std::wcout << L"# " << commandline << std::endl;
+    std::wcout << L"# commandline: " << commandline << std::endl;
     std::wcout << L"# help *options:* https://grafana.com/docs/loki/latest/getting-started/logcli/" << std::endl;
     std::wcout << L"# help *query:*   https://grafana.com/docs/loki/latest/logql/" << std::endl << std::endl;
-
-    SetStdHandle(STD_ERROR_HANDLE, GetStdHandle(STD_OUTPUT_HANDLE));
 
     PROCESS_INFORMATION pi{};
     STARTUPINFO si{};
     si.cb = sizeof(si);
+    SetStdHandle(STD_ERROR_HANDLE, GetStdHandle(STD_OUTPUT_HANDLE));
     if (::CreateProcess(nullptr, (LPWSTR)commandline.c_str(), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi))
     {
         DWORD exitCode;
@@ -67,7 +70,6 @@ int wmain(int argc, wchar_t* argv[])
         }
         CloseHandle(pi.hThread);
         CloseHandle(pi.hProcess);
-        return exitCode;
     }
 
     return 0;
