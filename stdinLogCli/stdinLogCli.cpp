@@ -10,18 +10,29 @@ int wmain(int argc, wchar_t* argv[])
 {
     std::wstring commandline = L"logcli query ";
     std::wstring options = L"--timezone=UTC --since=1h --limit=30";
-    std::wstring query = L"{component=`renderserver`,environment=`tst`}";    
+    std::wstring query = L"{component=`renderserver`,environment=`tst`}";
 
     if (std::wcin && argc == 2 && wcscmp(argv[1], L"-") == 0 )
     {
-        query.clear();
-        options.clear();
         std::wstring input_line;
 
-        while (std::wcin && (getline(std::wcin, options), (options[0] == L'#' || options[0] == L';')))
+        // read options
+        if (std::wcin)
+            options.clear();
+        while (std::wcin)
+        {
+            getline(std::wcin, options);
+            if (!std::wcin)
+                break;
             std::wcout << options << std::endl;
+            if (options[0] != L'#' && options[0] != L';')
+                break;
+        }
 
-        do
+        // read query (multipe lines, ends with empty line or EOF
+        if (std::wcin)
+            query.clear();
+        while (std::wcin)
         {
             getline(std::wcin, input_line);
             if (!std::wcin)
@@ -37,7 +48,7 @@ int wmain(int argc, wchar_t* argv[])
             else
                 query += input_line;
         }
-        while (std::wcin);
+
     }
     else
     {
@@ -45,6 +56,7 @@ int wmain(int argc, wchar_t* argv[])
         std::wcout << query << std::endl << std::endl;
     }
 
+    std::wcout << L"# options: " << options << std::endl;
     std::wcout << L"# query: " << query << std::endl;
     // query = std::regex_replace(query, std::regex("\\\\"), "\\\\");
     query = std::regex_replace(query, std::wregex(L"\""), L"\\\"");
