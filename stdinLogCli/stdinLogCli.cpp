@@ -24,9 +24,8 @@ void getLineWithComments(std::wstring& str)
 
 int wmain(int argc, wchar_t* argv[])
 {
-    std::wstring commandline = L"logcli ";
+    std::wstring commandline = L"logcli query ";
     std::wstring options = L"--timezone=UTC --since=1h --limit=30";
-    std::wstring filter;
     std::wstring query = L"{component=`renderserver`,environment=`tst`}";
 
     if (std::wcin && argc == 2 && wcscmp(argv[1], L"-") == 0 )
