@@ -6,49 +6,46 @@
 #include <string>
 #include <regex>
 
+
+void getLineWithComments(std::wstring& str)
+{
+    if (std::wcin)
+        str.clear();
+    while (std::wcin)
+    {
+        getline(std::wcin, str);
+        if (!std::wcin)
+            break;
+        std::wcout << str << std::endl;
+        if (str[0] != L'#' && str[0] != L';')
+            break;
+    }
+}
+
 int wmain(int argc, wchar_t* argv[])
 {
-    std::wstring commandline = L"logcli query ";
+    std::wstring commandline = L"logcli ";
     std::wstring options = L"--timezone=UTC --since=1h --limit=30";
+    std::wstring filter;
     std::wstring query = L"{component=`renderserver`,environment=`tst`}";
 
     if (std::wcin && argc == 2 && wcscmp(argv[1], L"-") == 0 )
     {
         std::wstring input_line;
 
-        // read options
-        if (std::wcin)
-            options.clear();
-        while (std::wcin)
-        {
-            getline(std::wcin, options);
-            if (!std::wcin)
-                break;
-            std::wcout << options << std::endl;
-            if (options[0] != L'#' && options[0] != L';')
-                break;
-        }
+        getLineWithComments(options);
 
-        // read query (multipe lines, ends with empty line or EOF
         if (std::wcin)
             query.clear();
         while (std::wcin)
         {
-            getline(std::wcin, input_line);
-            if (!std::wcin)
-                input_line.clear();
-
-            std::wcout << input_line << std::endl;
-
-            if (input_line[0] == L'#' || input_line[0] == L';')
-                continue;
+            getLineWithComments(input_line);
 
             if (input_line.empty())
                 break;
             else
                 query += input_line;
         }
-
     }
     else
     {
@@ -60,7 +57,9 @@ int wmain(int argc, wchar_t* argv[])
     std::wcout << L"# query: " << query << std::endl;
     // query = std::regex_replace(query, std::regex("\\\\"), "\\\\");
     query = std::regex_replace(query, std::wregex(L"\""), L"\\\"");
-    commandline += options + L" \"" + query + L"\"";
+    commandline += options;
+    if (!query.empty())
+        commandline += L" \"" + query + L"\"";
 
     std::wcout << L"# commandline: " << commandline << std::endl;
     std::wcout << L"# confluence: https://confluence.thinprint.de/x/WAIgC" << std::endl;
