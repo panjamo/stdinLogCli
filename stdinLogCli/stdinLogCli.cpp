@@ -25,10 +25,10 @@ void getLineWithComments(std::wstring& str)
 int wmain(int argc, wchar_t* argv[])
 {
     std::wstring commandline = L"logcli query ";
-    std::wstring options = L"--timezone=UTC --since=1h --limit=30";
-    std::wstring query = L"{component=`renderserver`,environment=`tst`}";
+    std::wstring options = L"";
+    std::wstring query = L"";
 
-    if (std::wcin && argc == 2 && wcscmp(argv[1], L"-") == 0 )
+    if (std::wcin && argc == 2 && wcscmp(argv[1], L"-") == 0)
     {
         std::wstring input_line;
 
@@ -46,10 +46,15 @@ int wmain(int argc, wchar_t* argv[])
                 query += input_line;
         }
     }
-    else
+    if (options.empty())
     {
+        options = L"--timezone=UTC --since=1h --limit=30";
         std::wcout << options << std::endl;
-        std::wcout << query << std::endl << std::endl;
+    }
+    if (query.empty())
+    {
+        query = L"{component=`renderserver`,environment=`tst`}|~ `(?i)error`";
+        std::wcout << L"{component=`renderserver`,environment=`tst`}\n|~ `(?i)error`" << std::endl << std::endl;
     }
 
     std::wcout << L"# options: " << options << std::endl;
