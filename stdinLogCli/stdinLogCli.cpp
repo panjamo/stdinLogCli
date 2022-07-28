@@ -48,13 +48,16 @@ int wmain(int argc, wchar_t* argv[])
     }
     if (options.empty())
     {
-        options = L"--timezone=UTC --since=1h --limit=30";
+        options = L"--timezone=UTC --since=1h --limit=1000 --output=default";
         std::wcout << options << std::endl;
+        std::wcout << L"# --timezone=Local --since=1h --limit=1000 --output=raw" << std::endl;
     }
     if (query.empty())
     {
-        query = L"{component=`renderserver`,environment=`tst`}|~ `(?i)error`";
-        std::wcout << L"{component=`renderserver`,environment=`tst`}\n|~ `(?i)error`" << std::endl << std::endl;
+        query = L"{component=~`renderserver|EndToEndTests`,environment=`tst`}|~ `(?i)error`";
+        std::wcout << L"{component=~`renderserver|EndToEndTests`,environment=`tst`}" << std::endl;
+        std::wcout << L"|~ `(?i)error`" << std::endl;
+        std::wcout << L"# | regexp `(?s)(\] | [^ ]{2} )(?P<msg>.*)` | line_format `{{.computer}} {{.module}} {{.msg}}` | label_format msg=`` " << std::endl << std::endl;
     }
 
     std::wcout << L"# options: " << options << std::endl;
