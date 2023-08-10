@@ -48,7 +48,7 @@ int wmain(int argc, wchar_t* argv[])
     }
     if (options.empty())
     {
-        options = L"--timezone=UTC --since=1h --limit=1000 --output=default";
+        options = L"--timezone=UTC --since=1h --limit=1000 --output=default --quiet";
         std::wcout << options << std::endl;
         std::wcout << L"# --timezone=Local --since=1h --limit=1000 --output=raw" << std::endl;
     }
@@ -57,7 +57,7 @@ int wmain(int argc, wchar_t* argv[])
         query = L"{component=~`renderserver|EndToEndTests`,environment=`tst`}|~ `(?i)error`";
         std::wcout << L"{component=~`renderserver|EndToEndTests`,environment=`tst`}" << std::endl;
         std::wcout << L"|~ `(?i)error`" << std::endl;
-        std::wcout << L"# | regexp `(?s)(\] | [^ ]{2} )(?P<msg>.*)` | line_format `{{.computer}} {{.module}} {{.msg}}` | label_format msg=`` " << std::endl << std::endl;
+        std::wcout << L"# | regexp `(?s)(\\] | [^ ]{2} )(?P<msg>.*)` | line_format `{{.computer}} {{.module}} {{.msg}}` | label_format msg=`` " << std::endl << std::endl;
     }
 
     std::wcout << L"# options: " << options << std::endl;
@@ -71,7 +71,8 @@ int wmain(int argc, wchar_t* argv[])
     std::wcout << L"# commandline: " << commandline << std::endl;
     std::wcout << L"# confluence: https://confluence.thinprint.de/x/WAIgC" << std::endl;
     std::wcout << L"# help *options:* https://grafana.com/docs/loki/latest/getting-started/logcli/" << std::endl;
-    std::wcout << L"# help *query:*   https://grafana.com/docs/loki/latest/logql/" << std::endl << std::endl;
+    std::wcout << L"# help *query:*   https://grafana.com/docs/loki/latest/logql/" << std::endl;
+    std::wcout << L"# help go regexp:*   https://pkg.go.dev/regexp/syntax" << std::endl << std::endl;
 
     PROCESS_INFORMATION pi{};
     STARTUPINFO si{};
