@@ -7,6 +7,15 @@
 #include <regex>
 
 
+/**
+ * @brief This function reads lines from the standard input and stores them in a string, ignoring lines that start with '#' or ';'.
+ * 
+ * @param str This is a reference to a std::wstring where the function will store the line read from the standard input.
+ * 
+ * @details The function clears the input string if the standard input is not at the end-of-file. It then reads lines from the standard input until it reaches the end-of-file or a line that does not start with '#' or ';'. The function stores the line read in the input string and outputs it to the standard output.
+ * 
+ * @remarks This function is used in the main function to read options and queries from the standard input. It is designed to ignore comment lines, which start with '#' or ';'. This allows the user to include comments in the input.
+ */
 void getLineWithComments(std::wstring& str)
 {
     if (std::wcin)
@@ -22,6 +31,18 @@ void getLineWithComments(std::wstring& str)
     }
 }
 
+/**
+ * @brief This is the main function of the program. It reads options and queries from the standard input, constructs a command line, and executes it.
+ * 
+ * @param argc The number of command-line arguments.
+ * @param argv An array of wide string command-line arguments.
+ * 
+ * @return Returns 0 upon successful execution.
+ * 
+ * @details This function first checks if the standard input is available and if the program was called with one argument being "-". If so, it reads options and queries from the standard input using the getLineWithComments function. It then constructs a command line using the read options and queries, and executes it using the CreateProcess function. If the execution is successful, it retrieves and outputs the exit code of the executed process.
+ * 
+ * @remarks This function is designed to be used with the logcli command-line tool for querying logs. It assumes that the standard input contains the options and queries for logcli, and that the options and queries are separated by lines starting with '#' or ';'. If the standard input is not available or the program was not called with one argument being "-", the function will use default options and queries.
+ */
 int wmain(int argc, wchar_t* argv[])
 {
     std::wstring commandline = L"logcli query ";
