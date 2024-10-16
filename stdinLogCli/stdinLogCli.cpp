@@ -69,9 +69,9 @@ int wmain(int argc, wchar_t *argv[])
     }
     if (options.empty())
     {
-        options = L"--timezone=UTC --since=1h --limit=1000 --output=default --quiet";
+        options = L"--timezone=UTC --since=1h --limit=1000 --output=jsonl --quiet";
         std::wcout << options << std::endl;
-        std::wcout << L"# --timezone=Local --since=1h --limit=1000 --output=raw" << std::endl;
+        std::wcout << L"# --timezone=Local --since=1h --limit=1000 --output=raw/default/jsonl" << std::endl;
     }
     if (query.empty())
     {
