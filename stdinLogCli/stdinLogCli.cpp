@@ -3,6 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <regex>
 
@@ -67,11 +68,12 @@ int wmain(int argc, wchar_t *argv[])
                 query += input_line;
         }
     }
+
     if (options.empty())
     {
-        options = L"--timezone=UTC --since=1h --limit=1000 --output=jsonl --quiet";
+        options = L"--timezone=UTC --since=1h --limit=1000 --output=jsonl --quiet --retries=0";
         std::wcout << options << std::endl;
-        std::wcout << L"# --timezone=Local --since=1h --limit=1000 --output=raw/default/jsonl" << std::endl;
+        std::wcout << L"# --timezone=Local --since=1h --limit=1000 --retries=0 --output=raw/default/jsonl" << std::endl;
     }
     if (query.empty())
     {
@@ -82,8 +84,40 @@ int wmain(int argc, wchar_t *argv[])
                    << std::endl;
     }
 
+
+
+
     std::wcout << L"# options: " << options << std::endl;
     std::wcout << L"# query: " << query << std::endl;
+
+    // Store query to a random temp file
+    wchar_t tempPath[MAX_PATH];
+    wchar_t tempFileName[MAX_PATH];
+    if (GetTempPath(MAX_PATH, tempPath) != 0)
+    {
+        if (GetTempFileName(tempPath, L"query", 0, tempFileName) != 0)
+        {
+            std::wfstream tempFile(tempFileName);
+            if (tempFile.is_open())
+            {
+                tempFile << query;
+                tempFile.close();
+                std::wcout << L"Query stored in temp file: " << tempFileName << std::endl;
+            }
+            else
+            {
+                std::wcerr << L"Failed to open temp file for writing." << std::endl;
+            }
+        }
+        else
+        {
+            std::wcerr << L"Failed to get temp file name." << std::endl;
+        }
+    }
+    else
+    {
+        std::wcerr << L"Failed to get temp path." << std::endl;
+    }
 
     commandline += options;
     auto commentCommandline = commandline;
@@ -100,15 +134,16 @@ int wmain(int argc, wchar_t *argv[])
 
             selector = std::regex_replace(selector, std::wregex(LR"(")"), LR"(`)");
             pureQuery = std::regex_replace(pureQuery, std::wregex(LR"(")"), LR"(\x{22})");
-            commandline += L" \"" + selector + pureQuery + L"\"";
+            // commandline += L" \"" + selector + pureQuery + L"\"";
+            // commandline += L" --query-file=" + std::wstring(tempFileName);
 
             if (commandline.find(L"--output=jsonl") != std::wstring::npos)
             {
-                commandline = LR"(cmd /c )" + commandline + LR"( | jq -r ".timestamp,.line" | sed ':begin;$!N;s/\(2024.*Z\)\n/\1 /;tbegin;P;D')";
+                commandline = LR"(cmd /c )" + commandline + L" @" + std::wstring(tempFileName) + LR"( | jq -r ".timestamp,.line" | sed ':begin;$!N;s/\(2024.*Z\)\n/\1 /;tbegin;P;D')";
             }
             else if (commentCommandline.find(L"--output=default") != std::wstring::npos)
             {
-                commandline = LR"(cmd /c )" + commandline + LR"( | sed -E 's/^(....-..-..T..:..:..[Z+0123456789:]{1,6}) \{.*?"\} *(.*)$/\1 \2/g')";
+                commandline = LR"(cmd /c )" + commandline + L" @" + std::wstring(tempFileName) + LR"( | sed -E 's/^(....-..-..T..:..:..[Z+0123456789:]{1,6}) \{.*?"\} *(.*)$/\1 \2/g')";
             }
         }
     }
